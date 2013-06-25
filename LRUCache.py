@@ -69,7 +69,7 @@ class LRUCache:
 
   def __check_and_evict(self):
     if len(self._cache.keys()) == self._size:
-      to_evict = sorted(self._cache.values())[0]
+      to_evict = min(self._cache.values())
       del self._cache[to_evict.key()]
 
   def bound(self, size):
@@ -109,7 +109,7 @@ class LRUCache:
 
 class CacheCommandExecutor:
 
-  def __init__(self, cache, input_commands):
+  def __init__(self, cache, input_commands=[]):
     self._cache = cache
     self._commands = ['BOUND', 'SET', 'GET', 'PEEK', 'DUMP']
     self._input_commands = input_commands
@@ -122,11 +122,11 @@ class CacheCommandExecutor:
       cache_command = cmd[0]
       arguments = cmd[1:]
 
-      self.__execute(cache_command, arguments) 
+      self.execute(cache_command, arguments) 
 
-  def __execute(self, cmd, args = []):
+  def execute(self, cmd, args = []):
     if cmd not in self._commands:
-      raise InvalidCacheCommand()
+      return
 
     if cmd == 'BOUND':
       self._cache.bound(int(args[0]))
@@ -141,10 +141,13 @@ class CacheCommandExecutor:
  
 if __name__ == '__main__':
 
-  input_commands = [line.strip() for line in sys.stdin.readlines() if line != '\n'][1:]
+  N = sys.stdin.readline()
 
   cache = LRUCache()
+  command_executor = CacheCommandExecutor(cache)
 
-  command_executor = CacheCommandExecutor(cache, input_commands)
+  for line in sys.stdin:
+    line = line.strip().split(' ')
+    cmd, args = line[0], line[1:]
 
-  command_executor.execute_all() 
+    command_executor.execute(cmd, args)
