@@ -73,7 +73,11 @@ class LRUCache:
       del self._cache[to_evict.key()]
 
   def bound(self, size):
-    self._size = size  
+    if size < 0:
+        print 'invalid BOUND size'
+        sys.exit()
+    else:
+        self._size = size  
 
   def set(self, key, value):
     self.__check_and_evict()
