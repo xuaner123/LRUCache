@@ -80,13 +80,19 @@ class LRUCache:
         self._size = size  
 
   def set(self, key, value):
-    self.__check_and_evict()
     check = self.__check_entry_constraints(key, value)
     
     if not check:
-      raise CacheEntryException()
-    
-    self._cache[key] = Cacheable(key, value)
+      ''' If key-val pair is invalid, ignore the input. 
+      Other way to handle is raise CacheEntryException() '''
+
+      print 'invalid key and value pair: (' + key + ', ' + value + ')'
+
+    else:
+      ''' if a valid key-val pair, then check to evict '''
+
+      self.__check_and_evict()
+      self._cache[key] = Cacheable(key, value)
 
   def __get_and_age(self, key, age):
     value = self._cache.get(key)
